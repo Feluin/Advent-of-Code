@@ -2,18 +2,32 @@
 
 const fs = require("fs");
 const path = require("path");
-const { performance } = require("perf_hooks");
+const {performance} = require("perf_hooks");
+const {log} = require("util");
 
-const INPUT = String(fs.readFileSync(path.join(__dirname, "input.txt"))).trim().split("\n");
+const INPUT = String(fs.readFileSync(path.join(__dirname, "input.txt"))).split("\n"); // change this if necessary
 
 const pStart = performance.now();
 
-// feels a bit like cheating lol
-// but yea why not list every possible move with it's exact score
-const MOVES = { "A X": 4, "A Y": 8, "A Z": 3, "B X": 1, "B Y": 5, "B Z": 9, "C X": 7, "C Y": 2, "C Z": 6 };
-const score = INPUT.map(e => MOVES[e]).reduce((a, b) => a + b, 0);
+const a = {
+    "A X": 1 + 3,//Rock = Rock
+    "A Y": 2 + 6,//Rock < Paper
+    "A Z": 3 + 0,//Rock > Sissors
+    "B X": 1 + 0,//Paper > Rock
+    "B Y": 2 + 3,//Paper = Paper
+    "B Z": 3 + 6,//Paper < Sissors
+    "C X": 1 + 6,//Sissors < Rock
+    "C Y": 2 + 0,//Sissors > Paper
+    "C Z": 3 + 3,//Sissors = Sissors
 
+}
+
+const result2 = INPUT.map(value => a[value])
+    .filter(value => !!value).slice(0, 100).forEach(value => console.log(value))
+const result = INPUT.map(value => a[value])
+    .filter(value => !!value)
+    .reduce((previousValue, currentValue) => previousValue + currentValue)
 const pEnd = performance.now();
 
-console.log("FINAL SCORE (XYZ = ME): " + score);
+console.log("<DESCRIPTION>: " + result);
 console.log(pEnd - pStart);
