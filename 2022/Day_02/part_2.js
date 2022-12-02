@@ -3,7 +3,6 @@
 const fs = require("fs");
 const path = require("path");
 const {performance} = require("perf_hooks");
-const {log} = require("util");
 
 const INPUT = String(fs.readFileSync(path.join(__dirname, "input.txt"))).split("\n"); // change this if necessary
 
@@ -20,10 +19,6 @@ const a = {
     "C Y": 3 + 3, //Sissors = Sissors      //draw
     "C Z": 1 + 6, //Sissors < Rock        //win
 }
-
-
-const result2 = INPUT.map(value => a[value])
-    .filter(value => !!value).slice(0, 100).forEach(value => console.log(value))
 const result = INPUT.map(value => a[value])
     .filter(value => !!value)
     .reduce((previousValue, currentValue) => previousValue + currentValue)
