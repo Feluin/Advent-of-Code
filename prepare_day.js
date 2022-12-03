@@ -8,7 +8,7 @@ const fs = require("node:fs");
 
 const fetch = require("node-fetch").default;
 const cheerio = require("cheerio");
-
+const {exec} = require("child_process");
 let year;
 let day;
 let session;
@@ -18,33 +18,30 @@ if (!!process.argv[3]) session = process.argv[3];
 else {
     try {
         session = require("./config.json").session;
-    }
-    catch (e) {
+    } catch (e) {
         console.log("No config.json found! Copy-paste config.template.json to config.json and fill in your session cookie!");
         process.exit(1);
     }
 
-    if (!session){
+    if (!session) {
         console.log("No session cookie found! Fill in your session cookie in config.json!");
         process.exit(1);
     }
 }
 
 const date = process.argv[2];
-if (!date || date === "today"){
+if (!date || date === "today") {
     const now = new Date();
     const y = now.getFullYear();
     const d = now.getDate();
 
     year = String(y);
     day = String(d);
-}
-
-else {
+} else {
     [year, day] = date.split("-");
 }
 
-if ((!year || !day) || (isNaN(Number(year)) || isNaN(Number(day)))){
+if ((!year || !day) || (isNaN(Number(year)) || isNaN(Number(day)))) {
     console.error("Invalid year-day specified!");
     process.exit(1);
 }
@@ -56,8 +53,8 @@ const headers = {
     cookie: `session=${session};`,
 };
 
-(async() => {
-    const markup = await fetch(`https://adventofcode.com/${year}/day/${day}`, { headers }).then(res => res.text());
+(async () => {
+    const markup = await fetch(`https://adventofcode.com/${year}/day/${day}`, {headers}).then(res => res.text());
 
     const $ = cheerio.load(markup);
 
@@ -92,7 +89,7 @@ const headers = {
         sanitized.match(/<a href=".*?">.*?<\/a>/g)?.forEach(link => {
             const [, href, text] = link.match(/<a href="(.+?)">(.+?)<\/a>/) ?? [];
             const regex = new RegExp(String(link.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")).trim(), "gi");
-            
+
             sanitized = sanitized.replace(regex, `[${text}](${href.replace(/&amp;/g, "&")})`);
         });
 
@@ -107,13 +104,13 @@ Author: Eric Wastl ([@ericwastl](https://twitter.com/ericwastl)) (${year})
 ` + res[0] + (!!res[1] ? ("\n---\n\n" + res[1]) : "");
 
     const dir = `./${year}/Day_${day.padStart(2, "0")}`;
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, {recursive: true});
 
-    fs.writeFileSync(`${dir}/README.md`, result, { flag: "w" });
+    fs.writeFileSync(`${dir}/README.md`, result, {flag: "w"});
 
-    const input = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, { headers }).then(res => res.text());
+    const input = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, {headers}).then(res => res.text());
 
-    fs.writeFileSync(`${dir}/input.txt`, input, { flag: "w" });
+    fs.writeFileSync(`${dir}/input.txt`, input, {flag: "w"});
 
     const CODE = `"use strict";
 
@@ -138,4 +135,5 @@ console.log(pEnd - pStart);
 
     if (!fs.existsSync(`${dir}/part_1.js`)) fs.writeFileSync(`${dir}/part_1.js`, CODE);
     if (!fs.existsSync(`${dir}/part_2.js`)) fs.writeFileSync(`${dir}/part_2.js`, CODE);
+    exec(`git add ${dir}/*`)
 })();
