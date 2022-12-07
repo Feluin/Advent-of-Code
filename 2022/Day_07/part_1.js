@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const {performance} = require("perf_hooks");
 
+
 const INPUT = String(fs.readFileSync(path.join(__dirname, "input.txt"))).split("\n").slice(1, -1); // change this if necessary
 
 class TreeNode {
@@ -31,6 +32,11 @@ class TreeNode {
 
     isDir() {
         return this.type === "dir"
+    }
+
+    printTree(i) {
+        console.log(" ".repeat(i) + this.name +" | "+this.getValue())
+        Object.values(this.children).forEach(value =>  value.printTree(i+1))
     }
 }
 
@@ -70,7 +76,7 @@ while (i < INPUT.length) {
 
 
 const pEnd = performance.now();
-
+root.printTree(0)
 console.log(root.getSubNodesflat().filter(value => value.isDir()).map(node => node.getValue()).filter(value => value < 100000)
     .reduce((previousValue, currentValue) => previousValue + currentValue))
 console.log("<DESCRIPTION>: " + result);
