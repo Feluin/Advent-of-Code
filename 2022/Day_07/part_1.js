@@ -8,7 +8,6 @@ const {performance} = require("perf_hooks");
 const INPUT = String(fs.readFileSync(path.join(__dirname, "input.txt"))).split("\n").slice(1, -1); // change this if necessary
 
 class TreeNode {
-
     constructor(type, name, parent) {
         this.parent = parent;
         this.type = type;
@@ -62,7 +61,6 @@ while (i < INPUT.length) {
             console.log(INPUT[i] + "   " + Object.keys(tree.children))
             tree = tree.children[dir]
         }
-
     } else if (INPUT[i].startsWith("$ ls")) {
 
         do {
